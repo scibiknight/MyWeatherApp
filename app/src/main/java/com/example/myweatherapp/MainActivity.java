@@ -1,15 +1,21 @@
 package com.example.myweatherapp;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.util.Date;
 
 import data.JSONWeatherParser;
 import data.WeatherHttpClient;
@@ -44,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         temp=(TextView)findViewById(R.id.temp);
         pressure=(TextView)findViewById(R.id.Pressure);
 
-        renderWeatherData("Tirunelveli");
+        renderWeatherData("Chennai");
 
     }
 
@@ -65,18 +71,33 @@ public class MainActivity extends AppCompatActivity {
             return weather;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected void onPostExecute(Weather weather) {
 
 
+
             super.onPostExecute(weather);
 
-            if (weather != null) {
-                // Do you work here on success
-            } else {
+            DecimalFormat decimalFormat= new DecimalFormat("#.#");
+            String tempformat=decimalFormat.format(weather.currentCondition.getTemperature());
+
+            DateFormat df= DateFormat.getTimeInstance();
+
+            String sunraisedate = df.format(new Date(weather.place.getSunrise()));
+            String sunsetdate=df.format(new Date(weather.place.getSunset()));
+            String lastupdatedate=df.format(new Date(weather.place.getLastupdate()));
+            city.setText(weather.place.getCity());
+            clouds.setText("Clouds :"+weather.clouds.getPrecipitation()+"%");
+            temp.setText(tempformat+"°C");
+            humidity.setText("Humidity :"+weather.currentCondition.getHumidity()+"%");
+            pressure.setText("Pressure :"+weather.currentCondition.getPressure()+"Hpa");
+            wind.setText("Wind :"+weather.wind.getSpeed()+ "mps");
+            sunrise.setText("Sun Raise :"+sunraisedate);
+            sunset.setText("Sun Set :"+sunsetdate);
+            Udpate.setText("Last Updated on :"+lastupdatedate);
 
 
 
-            }
         }
     }}
